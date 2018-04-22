@@ -1,0 +1,20 @@
+//mogodb
+sudo service mongod stop　　   #停止服务
+sudo service mongod start　　  #启动服务
+sudo service mongod restart   #重新启动服务
+sudo service mongod status    #查看状态
+sudo systemctl enable mongod  #允许开机启动，默认当重启服务器后，mongodb服务会停止，需要设置开机启动mongodb服务
+
+sudo mongo #进入mongo
+db.version();
+show users          #显示用户
+show dbs            #显示数据库列表 
+show collections    #显示当前数据库中的集合（类似关系数据库中的表） 
+show tables         #查看所有集合(表)
+use doracms2        #切换当前数据库，这和MS-SQL里面的意思一样 
+db.库.help()  
+
+db.表.find().sort({name:1}) #1正序 -1倒序
+db.表.find()                #查看全部表记录
+db.表.findOne()             #查看一条表记录
+db.表.help()                #显示集合操作命令，同样有很多的命令，foo指的是当前数据库下，一个叫foo的集合，并非真正意义上的命令 
