@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=/media/gu/workspace/workspace/kindergarten/doc/base-commons-0.0.2.jar -DgroupId=com.9lead.cn -DartifactId=base-commons -Dversion=0.0.2 -Dpackaging=jar
