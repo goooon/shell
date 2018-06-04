@@ -1,0 +1,100 @@
+1. Install and configure the necessary dependencies
+On CentOS 7 (and RedHat/Oracle/Scientific Linux 7), the commands below will also open HTTP and SSH access in the system firewall.
+
+sudo yum install -y curl policycoreutils-python openssh-server
+sudo systemctl enable sshd
+sudo systemctl start sshd
+
+sudo firewall-cmd --permanent --add-service=http
+sudo systemctl unmask firewalld.service
+sudo systemctl reload firewalld
+
+Next, install Postfix to send notification emails. If you want to use another solution to send emails please skip this step and configure an external SMTP server after GitLab has been installed.
+
+sudo yum install postfix
+sudo systemctl enable postfix
+sudo systemctl start postfix
+
+During Postfix installation a configuration screen may appear. Select 'Internet Site' and press enter. Use your server's external DNS for 'mail name' and press enter. If additional screens appear, continue to press enter to accept the defaults.
+
+2. Add the GitLab package repository and install the package
+Add the GitLab package repository.
+
+curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+sudo yum install gitlab-ce
+
+Next, install the GitLab package. Change `http://gitlab.example.com` to the URL at which you want to access your GitLab instance. Installation will automatically configure and start GitLab at that URL. HTTPS requires additional configuration after installation.
+
+sudo EXTERNAL_URL="http://gitlab.zhongchen.com" yum install -y gitlab-ce
+
+3. Browse to the hostname and login
+On your first visit, you'll be redirected to a password reset screen. Provide the password for the initial administrator account and you will be redirected back to the login screen. Use the default account's username root to login.
+
+See our documentation for detailed instructions on installing and configuration.
+
+4. Set up your communication preferences
+Visit our email subscription preference center to let us know when to communicate with you. We have an explicit email opt-in policy so you have complete control over what and how often we send you emails.
+
+Twice a month, we send out the GitLab news you need to know, including new features, integrations, docs, and behind the scenes stories from our dev teams. For critical security updates related to bugs and system performance, sign up for our dedicated security newsletter.
+
+IMPORTANT NOTE: If you do not opt-in to the security newsletter, you will not receive security alerts.
+
+
+
+大概内容如下：
+
+1. Install and configure the necessary dependencies
+If you install Postfix to send email please select 'Internet Site' during setup. Instead of using Postfix you can also use Sendmail or configure a custom SMTP server and configure it as an SMTP server.
+
+On CentOS, the commands below will also open HTTP and SSH access in the system firewall.
+
+安装ssh
+sudo yum install curl policycoreutils openssh-server openssh-clients
+sudo systemctl enable sshd
+sudo systemctl start sshd
+
+安装postfix
+sudo yum install postfix
+sudo systemctl enable postfix
+sudo systemctl start postfix
+
+配置防火墙
+sudo firewall-cmd --permanent --add-service=http
+firewall-cmd --zone=public --add-port=82/tcp --permanent #添加要开放的端口82
+sudo systemctl reload firewalld
+
+2. Add the GitLab package server and install the package
+curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+sudo yum install gitlab-ce
+If you are not comfortable installing the repository through a piped script, you can find the entire script here and select and download the package manually and install using
+
+curl -LJO https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-XXX.rpm/download
+rpm -i gitlab-ce-XXX.rpm
+
+配置gitlab
+
+#打开配置文件 gitlab.rb
+[root@VM_177_101_centos gitlab]# vim /etc/gitlab/gitlab.rb
+
+#修改外网访问地址 13行
+#ip为主机的ip地址，端口默认是8080，这里为了避免出现占用，也进行修改一下，我的配置为9999
+external_url = 'http://ip:prot'
+
+
+
+#修改nginx监听
+#gitlab默认使用了nginx进行反向代理，这里我重新配置了一下 579行~580行
+unicorn['listen'] = '127.0.0.1'
+unicorn['port'] = 8082
+
+#重新配置nginx 800行
+nginx['enable'] = true
+nginx['listen_addresses'] = ['*']
+nginx['listen_port'] = 82
+
+#退出并保存
+
+4. Configure and start GitLab
+sudo gitlab-ctl start
+sudo gitlab-ctl reconfigure
+sudo gitlab-ctl restart

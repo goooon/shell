@@ -1,0 +1,10 @@
+{
+  "commands": [
+    {
+      "command": "runInTerminal.run",
+      "text": "$(sync)",
+      "tooltip": "Refresh commands",
+      "color": "#FFCC00"
+    }
+  ]
+}

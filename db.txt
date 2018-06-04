@@ -12,9 +12,140 @@ show dbs            #显示数据库列表
 show collections    #显示当前数据库中的集合（类似关系数据库中的表） 
 show tables         #查看所有集合(表)
 use doracms2        #切换当前数据库，这和MS-SQL里面的意思一样 
+db.system.users.find() #查看用户
 db.库.help()  
 
 db.表.find().sort({name:1}) #1正序 -1倒序
 db.表.find()                #查看全部表记录
 db.表.findOne()             #查看一条表记录
 db.表.help()                #显示集合操作命令，同样有很多的命令，foo指的是当前数据库下，一个叫foo的集合，并非真正意义上的命令 
+
+//sql
+sudo apt-get update
+sudo apt-get install mysql-server
+sudo mysql_secure_installation
+#服务管理
+sudo service mysql start #启动
+sudo service mysql stop #停止
+sudo service mysql status #服务状态
+
+#连接数据库
+mysql -h 127.0.0.1 -P 3306 -uroot -p #-h为远程IP，-P为端口号，-u为用户名，-p为密码
+
+mysql> SELECT DISTINCT CONCAT('User: ''',user,'''@''',host,''';') AS query FROM mysql.user; #查看MYSQL数据库中所有用户
+
+#卸载
+sudo apt purge mysql-*
+sudo rm -rf /etc/mysql/ /var/lib/mysql
+sudo apt autoremove
+sudo apt autoclean
+
+//redis
+sudo apt-get update
+sudo apt-get install redis-server
+redis-server #启动
+redis-server /etc/redis/6381.conf #按照redis.conf启动
+redis-cli #查看状态
+redis-cli -p 6381 #结合端口查看状态
+redis-cli shutdown #关闭服务
+redis-cli -p 6381 -a password shutdown #如果非默认端口，可指定端口:
+cat /etc/redis/6381.conf
+/etc/init.d/redis-server stop
+/etc/init.d/redis-server start
+/etc/init.d/redis-server restart
+
+
+//android studio
+//install
+sudo apt-add-repository ppa:paolorotolo/android-studio
+sudo apt-get update
+sudo apt-get install android-studio
+//uninstall
+sudo apt-get install ppa-purge
+sudo apt-get remove android-studio
+sudo ppa-purge ppa:paolorotolo/android-studio
+
+//vi
+w ! sudo tee % > /dev/null 
+
+
+//centos7 安装mysql 5.6
+rpm -Uvh http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+yum repolist enabled | grep "mysql.*-community.*" #下载完成之后查看一下都有哪些mysql的文件
+yum install mysql-community-server #安装，这个过程中会提示安装一些相关的软件，点击“y”就可以了
+systemctl start mysqld
+service mysqld start
+mysql_secure_installation #将mysql启动之后，开始进行一些基本信息的设置
+
+MySQL默认用户是 root，由于初始没有密码，第一次进时只需键入mysql即可。
+mysql -u root -p 
+Enter password: (输入密码) 
+
+如果输入密码出错：ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO) 
+则：
+mysql> UPDATE user SET Password=PASSWORD('pwd') where USER='root'; 
+mysql> FLUSH PRIVILEGES; 
+mysql> quit 
+# /etc/init.d/mysqld restart 
+# mysql -u root -p 
+Enter password: 
+
+#开机启动
+systemctl enable mysqld
+systemctl daemon-reload
+
+mysql> insert into mysql.user(Host,User,Password) values("%","kindergarten",password("password"));
+mysql> CREATE DATABASE kindergarten;
+
+mysql> GRANT USAGE ON *.* TO 'kindergarten'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;
+mysql> GRANT ALL PRIVILEGES ON kindergarten.* TO kindergarten@"%" IDENTIFIED BY "password";
+mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON kindergarten.*  TO 'kindergarten'@'%' IDENTIFIED BY 'GG7Hfv6zAU1W';
+这样就创建了一个名为：test 密码为：1234 的用户。注意：此处的"localhost"，是指该用户只能在本地登录，不能在另外一台机器上远程登录。如果想远程登录的话，将"localhost"改为"%"，表示在任何一台电脑上都可以登录。也可以指定某台机器可以远程登录
+
+修改端口号、开放端口
+vi /etc/my.cnf 
+添加port=3308
+重新启动mysql服务使配置生效：
+systemctl restart mysqld
+
+设置远程端口
+
+# firewall-cmd --zone=public --add-port=3586/tcp --permanent
+# firewall-cmd --reload
+success
+
+配置默认编码为utf8
+修改/etc/my.cnf配置文件，在[mysqld]下添加编码配置，如下所示：
+[mysqld]
+character_set_server=utf8
+init_connect='SET NAMES utf8'
+
+默认配置文件路径： 
+配置文件：/etc/my.cnf 
+日志文件：/var/log//var/log/mysqld.log 
+服务启动脚本：/usr/lib/systemd/system/mysqld.service 
+socket文件：/var/run/mysqld/mysqld.pid
+
+
+#redis
+$ wget http://download.redis.io/releases/redis-4.0.6.tar.gz
+$ tar xzf redis-4.0.6.tar.gz
+$ cd redis-4.0.6
+$ yum install gcc tcl -y
+$ make
+$ mkdir -p /usr/local/redis
+$ make PREFIX=/usr/local/redis install
+
+$ cd redis-4.0.6/src
+$ cp redis-sentinel /usr/local/redis/bin/
+$ vim ~/.bash_profile
+$ export REDIS_HOME=/usr/local/redis
+$ export PATH=$PATH:$REDIS_HOME/bin
+$ source ~/.bash_profile
+
+redis-cli -p 6381 -a 9GfaKcJZqp shutdown //关闭
+redis-server /etc/redis/6381.conf //开启
+
+#修改端口6381
+# firewall-cmd --zone=public --add-port=6381/tcp --permanent
+# firewall-cmd --reload

@@ -1,0 +1,86 @@
+useradd [选项] $userName       #创建用户, useradd -s /bin/sh -g group –G adm,root gem
+                                选项:
+                                    -c comment 指定一段注释性描述。
+                                    -d 目录 指定用户主目录，如果此目录不存在，则同时使用-m选项，可以创建主目录。
+                                    -g 用户组 指定用户所属的用户组。
+                                    -G 用户组，用户组 指定用户所属的附加组。
+                                    -s Shell文件 指定用户的登录Shell。
+                                    -u 用户号 指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号。
+passwd $userName        #设置密码，输入此命令后会提示你输入密码
+                        #但是这个时候并没有创建home，由于作为客户端的同学是想在服务器上站一个位置的，所以通过下面命令创建登陆文件夹
+mkdir $homeDir                      #增加目录
+chmod  700 $homeDir                 #把共享目录的权限设置为700.只有用户自己可以对文件夹进行读写操作。
+chown -R $homeDir:$homeDir $userName
+useradd -d /home/homeDir userName   #增加home目录
+usermod -s /bin/bash $userName      #增加shell
+userdel -r $userName                #删除用户
+su - youruser #切换用户
+
+usermod 选项 $userName                     #修改帐号
+                                            选项:
+                                            -c comment 指定一段注释性描述。
+                                            -d 目录 指定用户主目录，如果此目录不存在，则同时使用-m选项，可以创建主目录。
+                                            -g 用户组 指定用户所属的用户组。
+                                            -G 用户组，用户组 指定用户所属的附加组。
+                                            -s Shell文件 指定用户的登录Shell。
+                                            -u 用户号 指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号。
+passwd 选项 $userName                    #用户口令的管理,
+                                        #选项：
+                                            -l 锁定口令，即禁用账号。
+                                            -u 口令解锁。
+                                            -d 使账号无口令。
+                                            -f 强迫用户下次登录时修改口令。
+#增加用户到samba服务器
+sudo smbpasswd -a $username
+/etc/passwd文件是用户管理工作涉及的最重要的一个文件。用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录Shell
+/etc/group 用户组的所有信息都存放在该文件中。
+
+groupadd [选项] $groupName                 #新建组
+                                           #选项：
+                                            -g GID 指定新用户组的组标识号（GID）。
+                                            -o 一般与-g选项同时使用，表示新用户组的GID可以与系统已有用户组的GID相同。
+groupdel $groupName
+groupmod 选项 $groupName                    #修改组
+                                            #选项：
+                                            -g GID 指定新用户组的组标识号（GID）。
+                                            -o 一般与-g选项同时使用，表示新用户组的GID可以与系统已有用户组的GID相同。
+
+
+
+添加管理员权限
+#adduser tommy 
+//添加一个名为tommy的用户
+#passwd tommy   //修改密码
+Changing password for user tommy.
+New UNIX password:     //在这里输入新密码
+Retype new UNIX password:  //再次输入新密码
+passwd: all authentication tokens updated successfully.
+
+2、赋予root权限 
+
+方法一： 修改 /etc/sudoers 文件，找到下面一行，把前面的注释（#）去掉
+
+## Allows people in group wheel to run all commands
+%wheel    ALL=(ALL)    ALL
+
+然后修改用户，使其属于root组（wheel），命令如下：
+
+#usermod -g root tommy
+
+修改完毕，现在可以用tommy帐号登录，然后用命令 su - ，即可获得root权限进行操作。
+
+方法二： 修改 /etc/sudoers 文件，找到下面一行，在root下面添加一行，如下所示：
+
+## Allow root to run any commands anywhere
+root    ALL=(ALL)     ALL
+tommy   ALL=(ALL)     ALL
+
+修改完毕，现在可以用tommy帐号登录，然后用命令 su - ，即可获得root权限进行操作。
+
+方法三： 修改 /etc/passwd 文件，找到如下行，把用户ID修改为 0 ，如下所示：
+
+tommy:x:500:500:tommy:/home/tommy:/bin/bash
+
+修改后如下
+
+tommy:x:0:500:tommy:/home/tommy:/bin/bash
