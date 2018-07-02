@@ -83,7 +83,7 @@ Enter password: (输入密码)
 
 如果输入密码出错：ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO) 
 则：
-mysql> UPDATE user SET Password=PASSWORD('pwd') where USER='root'; 
+mysql> UPDATE user SET Password=PASSWORD('Password11!') where USER='root'; 
 mysql> FLUSH PRIVILEGES; 
 mysql> quit 
 # /etc/init.d/mysqld restart 
