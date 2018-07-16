@@ -50,7 +50,7 @@
 
 添加
 
-firewall-cmd --zone=public --add-port=3562/tcp --permanent   （--permanent永久生效，没有此参数重启后失效）
+firewall-cmd --zone=public --add-port=8080/tcp --permanent   （--permanent永久生效，没有此参数重启后失效）
 
 重新载入
 
